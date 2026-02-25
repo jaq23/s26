@@ -1,0 +1,83 @@
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public class VennDiagram {
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Get user input for Set 1
+        System.out.println("Enter the numbers for Set 1, separated by spaces (ex., 1 2 3 4):");
+        Set<Integer> setA = parseInput(scanner.nextLine());
+
+        // Get user input for Set 2
+        System.out.println("Enter the numbers for Set 2, separated by spaces (ex., 1 2 3 4):");
+        Set<Integer> setB = parseInput(scanner.nextLine());
+
+        // Calculating the Intersection
+        Set<Integer> intersection = new HashSet<>(setA);
+        // The retainAll() method only keeps numbers that they have in common
+        intersection.retainAll(setB); 
+
+        // Calculating the Union
+        Set<Integer> union = new HashSet<>(setA);
+        // The addAll() method combines the numbers that they DO NOT have in common
+        union.addAll(setB); 
+
+        // Show Venn Diagram Prompts
+        System.out.println("\n--- Set Operations Results ---");
+        System.out.println("Set 1: " + setA);
+        System.out.println("Set 2: " + setB);
+        System.out.println("Intersection (A n B): " + intersection);
+        System.out.println("Union (A U B): " + union);
+
+        // Venn diagram (text based)
+        System.out.println("\n--- Venn Diagram ---");
+        displayVennDiagram(setA, setB, intersection);
+
+        scanner.close();
+    }
+
+    
+    private static Set<Integer> parseInput(String input) {
+        Set<Integer> set = new HashSet<>();
+        // Split input by space or comma and convert to integers
+        Arrays.stream(input.split("[\\s,]+"))
+              .filter(s -> !s.isEmpty())
+              .map(Integer::parseInt)
+              .forEach(set::add);
+        return set;
+    }
+
+    
+    private static void displayVennDiagram(Set<Integer> setA, Set<Integer> setB, Set<Integer> intersection) {
+        // Elements only in A
+        Set<Integer> onlyA = new HashSet<>(setA);
+        onlyA.removeAll(intersection);
+
+        // Elements only in B
+        Set<Integer> onlyB = new HashSet<>(setB);
+        onlyB.removeAll(intersection);
+
+        // Venn Diagram with characters
+        System.out.println("     +---------------+");
+        System.out.println("    /                 \\");
+        System.out.println("   |  Set A Only:      |  Set B Only:");
+        System.out.println("   |  " + onlyA + spaces(20 - onlyA.toString().length()) + "|  " + onlyB);
+        System.out.println("   |                    |                    |");
+        System.out.println("   |  Intersection:     |                    |");
+        System.out.println("   |  " + intersection + spaces(20 - intersection.toString().length()) + "|                 |");
+        System.out.println("   |                    |                    |");
+        System.out.println("    \\                 / ");
+        System.out.println("     +---------------+");
+    }
+
+      //Helps add spacing for alignment in the diagram.
+    private static String spaces(int count) {
+        if (count < 0) return "";
+        return " ".repeat(count);
+    }
+}
