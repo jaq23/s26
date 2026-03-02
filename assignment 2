@@ -1,0 +1,221 @@
+/*
+Assignment 2
+Group 4 
+Group Members:
+Jaquelyn Hernandez-Lomeli
+Celeste Villarreal
+Christopher Valle Salazar
+*/
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import java.awt.BorderLayout; //to be able to add a container to have the graph
+import java.awt.Graphics; // allows for application to be able to draw
+import java.awt.Polygon; //the region to draw within
+import java.awt.Color; // add color to graph
+
+import javax.swing.JFrame; 
+import javax.swing.JPanel;
+
+public class CombinedProgram {
+
+    public static void main(String[] args) {
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Choose an option:");
+        System.out.println("1 - Create a Venn Diagram");
+        System.out.println("2 - View the Graph");
+        System.out.print("Enter choice (1 or 2): ");
+
+        int choice = scanner.nextInt();
+        scanner.nextLine(); 
+
+        if (choice == 1) {
+            runVennDiagram(scanner);
+        } 
+        else if (choice == 2) {
+            runGraph();
+        } 
+        else {
+            System.out.println("Invalid choice.");
+        }
+
+        scanner.close();
+    }
+
+    // Get user input for Set 1
+    // Get user input for Set 2
+    // Calculating the Intersection
+    // Calculating the Union
+    // Show Venn Diagram Prompts
+    public static void runVennDiagram(Scanner scanner) {
+
+        System.out.println("Enter the numbers for Set 1, separated by spaces (ex., 1 2 3 4):");
+        Set<Integer> setA = parseInput(scanner.nextLine());
+
+        System.out.println("Enter the numbers for Set 2, separated by spaces (ex., 1 2 3 4):");
+        Set<Integer> setB = parseInput(scanner.nextLine());
+
+        Set<Integer> intersection = new HashSet<>(setA);
+        // The retainAll() method only keeps numbers that they have in common
+        intersection.retainAll(setB); 
+
+        Set<Integer> union = new HashSet<>(setA);
+        // The addAll() method combines the numbers that they DO NOT have in common
+        union.addAll(setB); 
+
+        System.out.println("\n--- Set Operations Results ---");
+        System.out.println("Set 1: " + setA);
+        System.out.println("Set 2: " + setB);
+        System.out.println("Intersection (A n B): " + intersection);
+        System.out.println("Union (A U B): " + union);
+
+        System.out.println("\n--- Venn Diagram ---");
+        displayVennDiagram(setA, setB, intersection);
+    }
+
+    private static Set<Integer> parseInput(String input) {
+        Set<Integer> set = new HashSet<>();
+        // Split input by space or comma and convert to integers
+        Arrays.stream(input.split("[\\s,]+"))
+              .filter(s -> !s.isEmpty())
+              .map(Integer::parseInt)
+              .forEach(set::add);
+        return set;
+    }
+
+    // Venn Diagram with characters
+    private static void displayVennDiagram(Set<Integer> setA, Set<Integer> setB, Set<Integer> intersection) {
+
+        // Elements only in A
+        Set<Integer> onlyA = new HashSet<>(setA);
+        onlyA.removeAll(intersection);
+
+        // Elements only in B
+        Set<Integer> onlyB = new HashSet<>(setB);
+        onlyB.removeAll(intersection);
+
+        System.out.println("     +---------------+     +---------------+");
+        System.out.println("    /                 \\   /                 \\");
+        System.out.println("   |  Set A Only:       |  Set B Only:      |");
+        System.out.println("   |  " + onlyA + spaces(18 - onlyA.toString().length()) + "|  " + onlyB);
+        System.out.println("   |                    |                   |");
+        System.out.println("   |  Intersection:     |                   |");
+        System.out.println("   |  " + intersection + spaces(18 - intersection.toString().length()) + "|                   |");
+        System.out.println("   |                    |                   |");
+        System.out.println("    \\                 /   \\                 / ");
+        System.out.println("     +---------------+     +---------------+");
+    }
+
+    //Helps add spacing for alignment in the diagram
+    private static String spaces(int count) {
+        if (count < 0) return "";
+        return " ".repeat(count);
+    }
+
+    public static void runGraph() {
+        Group4Assignment2 frame = new Group4Assignment2();
+        frame.setSize(400, 400); //size of the graph
+        frame.setLocationRelativeTo(null); 
+        frame.setTitle("Assignment 2"); //name of the windows
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //close program when windows is closed
+        frame.setVisible(true); //so you can see the window
+    }
+}
+
+class Group4Assignment2 extends JFrame {
+
+    public Group4Assignment2() {
+        setLayout(new BorderLayout());
+        add(new Draw(), BorderLayout.CENTER);
+    }
+
+    public static double log2(double value) { //log of a (using base 2) had to add separate class to be able to run log 2
+        return Math.log(value) / Math.log(2);
+    }
+
+    class Draw extends JPanel { //so that the program calculates the functions
+
+        double Twice(double x) //2 times x
+        {
+            return 2*x;
+        }
+
+        double Power(double y) //y to the power of 2
+        {
+            return Math.pow(y, 2);
+        }
+
+        double XPower(double z) //2 to power of z
+        {
+            return Math.pow(2, z);
+        }
+        
+        double log(double a) //log of a (using base 2)
+        {
+            return log2(a);
+        }
+
+        protected void paintComponent(Graphics g) //draw the graphics
+        {
+            super.paintComponent(g);
+
+            g.drawLine(10, 100, 380, 100);
+            g.drawLine(200, 30, 200, 190);
+
+            g.drawLine(380, 100, 370, 90);
+            g.drawLine(380, 100, 370, 110);
+            g.drawLine(200, 30, 190, 40);
+            g.drawLine(200, 30, 210, 40);
+
+            g.drawString("X", 360, 80);// x line 
+            g.drawString("Y", 220, 40); //y line
+
+            Polygon p = new Polygon(); //2 times x
+            Polygon p2 = new Polygon(); //y to the power of 2
+            Polygon p3 = new Polygon(); //2 to the power of z
+            Polygon p4 = new Polygon(); //log of a (using base 2)
+
+            for (int x = -170; x <= 170; x++) { //2 times x
+                p.addPoint(x + 200, 100 - (int) (50 * Twice((x / 100.0) * 2
+                        * Math.PI)));
+            }
+
+            for (int x = -170; x <= 170; x++) { //y to the power of 2
+                p2.addPoint(x + 200, 100 - (int) (50 * XPower((x / 100.0) * 2
+                        * Math.PI)));
+            }
+            
+            for (int x = -170; x <= 170; x++) {//2 to the power of z
+                p3.addPoint(x + 200, 100 - (int) (50 * Power((x / 100.0) * 2
+                        * Math.PI)));
+            }
+
+             for (int x = -170; x <= 170; x++) {//log of a (using base 2)
+                p4.addPoint(x + 200, 100 - (int) (50 * log2((x / 100.0) * 2
+                        * Math.PI)));
+            }
+
+            g.setColor(Color.red);
+            g.drawPolyline(p.xpoints, p.ypoints, p.npoints);
+            g.drawString("-2\u03c0", 95, 115);
+            g.drawString("2\u03c0", 305, 115);
+            g.drawString("0", 200, 115);
+
+            g.setColor(Color.blue);
+            g.drawPolyline(p2.xpoints, p2.ypoints, p2.npoints);
+            
+            g.setColor(Color.cyan);
+            g.drawPolyline(p3.xpoints, p3.ypoints, p3.npoints);
+            
+            g.setColor(Color.pink);
+            g.drawPolyline(p4.xpoints, p4.ypoints, p4.npoints);
+
+        }
+    }
+}
